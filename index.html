@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>log()</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="noise"></div>
+
+  <header class="topbar">
+    <a href="/" class="brand">log<span class="accent">()</span></a>
+    <a href="/write.html" class="write-btn">새 글 쓰기</a>
+  </header>
+
+  <section class="hero">
+    <p class="hero-eyebrow">$ whoami</p>
+    <h1 class="hero-title">기록하는<br><span class="accent">개발자</span>의 로그</h1>
+    <div class="terminal-ticker">
+      <span class="prompt">$</span>
+      <span id="ticker-text"></span><span class="cursor">▌</span>
+    </div>
+  </section>
+
+  <main class="feed" id="feed">
+    <!-- posts injected here -->
+  </main>
+
+  <footer class="footer">
+    <p>만들고, 부수고, 다시 만든다.</p>
+  </footer>
+
+  <script src="/js/main.js"></script>
+</body>
+</html>
