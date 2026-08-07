@@ -23,7 +23,7 @@ app.get('/api/posts', async (req, res) => {
   try {
     const { rows } = await pool.query(`
       SELECT id, title, slug, excerpt, tags, created_at
-      FROM posts WHERE published = true
+      FROM blog_posts WHERE published = true
       ORDER BY created_at DESC
     `);
     res.json(rows);
@@ -36,7 +36,7 @@ app.get('/api/posts', async (req, res) => {
 // 단일 글
 app.get('/api/posts/:slug', async (req, res) => {
   try {
-    const { rows } = await pool.query('SELECT * FROM posts WHERE slug = $1', [req.params.slug]);
+    const { rows } = await pool.query('SELECT * FROM blog_posts WHERE slug = $1', [req.params.slug]);
     if (rows.length === 0) return res.status(404).json({ error: 'not found' });
     const row = rows[0];
     row.contentHtml = marked.parse(row.content);
@@ -54,11 +54,11 @@ app.post('/api/posts', async (req, res) => {
     if (!title || !content) return res.status(400).json({ error: 'title, content required' });
 
     let slug = slugify(title) || `post-${Date.now()}`;
-    const exists = await pool.query('SELECT id FROM posts WHERE slug = $1', [slug]);
+    const exists = await pool.query('SELECT id FROM blog_posts WHERE slug = $1', [slug]);
     if (exists.rows.length > 0) slug = `${slug}-${Date.now()}`;
 
     const { rows } = await pool.query(
-      `INSERT INTO posts (title, slug, excerpt, content, tags) VALUES ($1,$2,$3,$4,$5) RETURNING id, slug`,
+      `INSERT INTO blog_posts (title, slug, excerpt, content, tags) VALUES ($1,$2,$3,$4,$5) RETURNING id, slug`,
       [title, slug, excerpt || '', content, tags || '']
     );
     res.json(rows[0]);
@@ -73,7 +73,7 @@ app.put('/api/posts/:id', async (req, res) => {
   try {
     const { title, excerpt, content, tags, published } = req.body;
     await pool.query(
-      `UPDATE posts SET title=$1, excerpt=$2, content=$3, tags=$4, published=$5, updated_at=NOW() WHERE id=$6`,
+      `UPDATE blog_posts SET title=$1, excerpt=$2, content=$3, tags=$4, published=$5, updated_at=NOW() WHERE id=$6`,
       [title, excerpt || '', content, tags || '', !!published, req.params.id]
     );
     res.json({ ok: true });
@@ -86,7 +86,7 @@ app.put('/api/posts/:id', async (req, res) => {
 // 글 삭제
 app.delete('/api/posts/:id', async (req, res) => {
   try {
-    await pool.query('DELETE FROM posts WHERE id = $1', [req.params.id]);
+    await pool.query('DELETE FROM blog_posts WHERE id = $1', [req.params.id]);
     res.json({ ok: true });
   } catch (e) {
     console.error(e);

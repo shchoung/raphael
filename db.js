@@ -13,7 +13,7 @@ const pool = new Pool({
 
 async function init() {
   await pool.query(`
-    CREATE TABLE IF NOT EXISTS posts (
+    CREATE TABLE IF NOT EXISTS blog_posts (
       id SERIAL PRIMARY KEY,
       title TEXT NOT NULL,
       slug TEXT UNIQUE NOT NULL,
@@ -26,10 +26,10 @@ async function init() {
     );
   `);
 
-  const { rows } = await pool.query('SELECT COUNT(*)::int AS c FROM posts');
+  const { rows } = await pool.query('SELECT COUNT(*)::int AS c FROM blog_posts');
   if (rows[0].c === 0) {
     await pool.query(
-      `INSERT INTO posts (title, slug, excerpt, content, tags) VALUES ($1,$2,$3,$4,$5)`,
+      `INSERT INTO blog_posts (title, slug, excerpt, content, tags) VALUES ($1,$2,$3,$4,$5)`,
       [
         '블로그를 시작하며',
         'starting-this-blog',
@@ -39,7 +39,7 @@ async function init() {
       ]
     );
     await pool.query(
-      `INSERT INTO posts (title, slug, excerpt, content, tags) VALUES ($1,$2,$3,$4,$5)`,
+      `INSERT INTO blog_posts (title, slug, excerpt, content, tags) VALUES ($1,$2,$3,$4,$5)`,
       [
         'RTX 3070 Ti로 로컬 LLM 굴리기',
         'local-llm-rtx-3070ti',
