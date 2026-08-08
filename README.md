@@ -33,7 +33,12 @@ Node.js + Express + Neon PostgreSQL로 만든 개인 블로그입니다.
 
 ## Render spin-down 방지 (GitHub Actions)
 
-`.github/workflows/keep-alive.yml`이 10분마다 배포된 URL(`https://raphael-54q0.onrender.com`)에 ping을 보내서 Render 무료 티어의 15분 spin-down 타이머를 계속 리셋합니다.
+`.github/workflows/keep-alive.yml`이 10분마다 아래 4개 사이트에 ping을 보내서 Render 무료 티어의 15분 spin-down 타이머를 계속 리셋합니다.
+
+- https://raphael-54q0.onrender.com (이 블로그)
+- https://apt-survival.onrender.com
+- https://gismap.onrender.com
+- https://portfolio-7f4l.onrender.com
 
 - 이 저장소를 GitHub에 푸시하면 자동으로 활성화됩니다. 별도 설정 필요 없음.
 - Actions 탭에서 "Keep Render app awake" 워크플로우 실행 기록을 확인할 수 있습니다.
