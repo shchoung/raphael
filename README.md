@@ -31,6 +31,15 @@ Node.js + Express + Neon PostgreSQL로 만든 개인 블로그입니다.
 - Render.com에 배포할 때는 환경변수 탭에 `DATABASE_URL`을 그대로 등록하면 됩니다.
 - 지금은 `/write.html`에 인증이 없어서 누구나 글을 쓸 수 있습니다. 배포 전에 간단한 비밀번호 체크라도 추가하는 걸 추천합니다.
 
+## Render spin-down 방지 (GitHub Actions)
+
+`.github/workflows/keep-alive.yml`이 10분마다 배포된 URL(`https://raphael-54q0.onrender.com`)에 ping을 보내서 Render 무료 티어의 15분 spin-down 타이머를 계속 리셋합니다.
+
+- 이 저장소를 GitHub에 푸시하면 자동으로 활성화됩니다. 별도 설정 필요 없음.
+- Actions 탭에서 "Keep Render app awake" 워크플로우 실행 기록을 확인할 수 있습니다.
+- 참고: 이건 Render가 공식 지원하는 방법은 아니고, 어디까지나 무료 티어에서 쓸 수 있는 우회책입니다. GitHub Actions의 스케줄은 정확히 10분마다 보장되지는 않고 몇 분 정도 밀릴 수 있어서, 아주 가끔은 spin-down을 못 막을 수도 있습니다. 완전히 확실하게 하려면 Render Starter 플랜($7/월)이 정식 해결책입니다.
+- URL이 바뀌면 `.github/workflows/keep-alive.yml` 안의 주소도 함께 바꿔주세요.
+
 ## 다음 단계로 해볼 만한 것들
 
 - 글쓰기 페이지 인증 추가
