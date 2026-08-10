@@ -6,7 +6,34 @@ const { pool, init } = require('./db');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+if (!process.env.ADMIN_USER || !process.env.ADMIN_PASSWORD) {
+  console.error('ADMIN_USER / ADMIN_PASSWORD가 설정되지 않았습니다. .env 파일을 확인하세요 (.env.example 참고).');
+  process.exit(1);
+}
+
+// 글쓰기/수정/삭제 및 /write.html 접근을 제한하는 Basic Auth 미들웨어
+function requireAuth(req, res, next) {
+  const auth = req.headers.authorization;
+  if (auth && auth.startsWith('Basic ')) {
+    const decoded = Buffer.from(auth.slice(6), 'base64').toString('utf-8');
+    const sepIndex = decoded.indexOf(':');
+    const user = decoded.slice(0, sepIndex);
+    const pass = decoded.slice(sepIndex + 1);
+    if (user === process.env.ADMIN_USER && pass === process.env.ADMIN_PASSWORD) {
+      return next();
+    }
+  }
+  res.set('WWW-Authenticate', 'Basic realm="blog-admin"');
+  return res.status(401).send('인증이 필요합니다.');
+}
+
 app.use(express.json());
+
+// write.html은 정적 서빙보다 먼저 가로채서 인증을 건다
+app.get('/write.html', requireAuth, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'write.html'));
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 function slugify(str) {
@@ -48,7 +75,7 @@ app.get('/api/posts/:slug', async (req, res) => {
 });
 
 // 새 글 작성
-app.post('/api/posts', async (req, res) => {
+app.post('/api/posts', requireAuth, async (req, res) => {
   try {
     const { title, excerpt, content, tags } = req.body;
     if (!title || !content) return res.status(400).json({ error: 'title, content required' });
@@ -69,7 +96,7 @@ app.post('/api/posts', async (req, res) => {
 });
 
 // 글 수정
-app.put('/api/posts/:id', async (req, res) => {
+app.put('/api/posts/:id', requireAuth, async (req, res) => {
   try {
     const { title, excerpt, content, tags, published } = req.body;
     await pool.query(
@@ -84,7 +111,7 @@ app.put('/api/posts/:id', async (req, res) => {
 });
 
 // 글 삭제
-app.delete('/api/posts/:id', async (req, res) => {
+app.delete('/api/posts/:id', requireAuth, async (req, res) => {
   try {
     await pool.query('DELETE FROM blog_posts WHERE id = $1', [req.params.id]);
     res.json({ ok: true });
